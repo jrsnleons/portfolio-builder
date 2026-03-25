@@ -1,0 +1,79 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+
+
+model User {
+	id        Int     @id @default(autoincrement())
+  name      String
+	email 		String  @unique
+	password 	String
+  bio       Bio?
+  category  Category[]
+}
+
+
+model Bio {
+  id        Int     @id @default(autoincrement())
+  user      User    @relation(fields: [userId], references: [id])
+  userId    Int     @unique
+  pdf       String
+  img       String
+}
+
+model Category {
+  id              Int @id @default(autoincrement())
+  user            User @relation(fields: [userId], references:[id])
+  userId          Int
+  categoryName    String
+  skills       Skill[]  @relation("CategoryToSkill")
+  projects        Project[]
+  experience      Experience[]
+}
+
+model Skill {
+  id          Int @id @default(autoincrement())
+  skillName        String
+  score       Int
+  categories Category[] @relation("CategoryToSkill")
+}
+
+model Project {
+  id            Int @id @default(autoincrement())
+  projectName   String
+  description   String
+  learnings     String[]
+  links         Link[]
+  dateFinished  DateTime
+  img           String
+  category    Category @relation(fields: [categoryId], references: [id])
+  categoryId  Int
+}
+
+model Experience {
+  id            Int @id @default(autoincrement())
+  company       String
+  role          String
+  dateStart     DateTime
+  dateEnd       DateTime?
+  companyLink   String
+  img           String
+  learnings     String[]
+  category      Category @relation(fields: [categoryId], references: [id])
+  categoryId   Int
+}
+
+model Link {
+  id        Int      @id @default(autoincrement())
+  url       String
+  label     String?
+
+  project   Project? @relation(fields: [projectId], references: [id])
+  projectId Int?
+}
